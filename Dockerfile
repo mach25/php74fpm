@@ -17,4 +17,4 @@ RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 COPY ./phpconf/memory_limit.ini $PHP_INI_DIR/conf.d/memory_limit.ini
 COPY ./phpconf/opcache.ini $PHP_INI_DIR/conf.d/opcache.ini
 COPY ./phpconf/xdebug.ini $PHP_INI_DIR/conf.d/xdebug.ini
-COPY ./phpconf/www.conf /usr/local/etc/php-fpm.d/
+COPY ./phpconf/www.conf /usr/local/etc/php-fpm.d/www.conf
