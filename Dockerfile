@@ -10,8 +10,10 @@ RUN apt-get update && apt-get install -y \
     libmemcached-dev \
     && docker-php-ext-install -j$(nproc) opcache gd mysqli pdo pdo_mysql xsl zip intl soap \
     && pecl install xdebug-2.9.5 && docker-php-ext-enable xdebug \
+    && pecl install igbinary-3.1.2 && docker-php-ext-enable igbinary \
+    && pecl install msgpack-2.1.0 && docker-php-ext-enable msgpack \
     && pecl install memcached-3.1.5 && docker-php-ext-enable memcached \
-    && pecl install igbinary-3.1.2 && docker-php-ext-enable igbinary
+    && pecl install uploadprogress-1.1.3 && docker-php-ext-enable uploadprogress
 
 
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
