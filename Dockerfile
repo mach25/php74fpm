@@ -9,6 +9,9 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     libmemcached-dev \
     libgmp-dev \
+    curl \
+    ping \
+    wget \
     && docker-php-ext-install -j$(nproc) opcache gd mysqli pdo pdo_mysql xsl zip intl soap bcmath exif gmp iconv  \
     && pecl install -a xdebug-2.9.5 && docker-php-ext-enable xdebug \
     && pecl install -a igbinary-3.1.2 && docker-php-ext-enable igbinary \
@@ -25,3 +28,5 @@ COPY ./phpconf/memory_limit.ini $PHP_INI_DIR/conf.d/memory_limit.ini
 COPY ./phpconf/opcache.ini $PHP_INI_DIR/conf.d/opcache.ini
 COPY ./phpconf/xdebug.ini $PHP_INI_DIR/conf.d/xdebug.ini
 COPY ./phpconf/www.conf /usr/local/etc/php-fpm.d/www.conf
+
+EXPOSE 9000
