@@ -11,8 +11,10 @@ RUN apt-get update && apt-get install -y \
     libgmp-dev \
     curl \
     wget \
+    msmtp \
+    mailutils \
     && docker-php-ext-install -j$(nproc) opcache gd mysqli pdo pdo_mysql xsl zip intl soap bcmath exif gmp iconv  \
-    && pecl install -a xdebug-2.9.5 && docker-php-ext-enable xdebug \
+    && pecl install -a xdebug-2.9.6 && docker-php-ext-enable xdebug \
     && pecl install -a igbinary-3.1.2 && docker-php-ext-enable igbinary \
     && pecl install -a msgpack-2.1.0 && docker-php-ext-enable msgpack \
     && pecl install --nobuild memcached-3.1.5 \
@@ -21,11 +23,20 @@ RUN apt-get update && apt-get install -y \
     && make -j$(nproc) && make install && cd /tmp/ && docker-php-ext-enable memcached \
     && pecl install -a uploadprogress-1.1.3 && docker-php-ext-enable uploadprogress
 
+# setup msmtp to work with mailhog
+RUN echo "defaults" >> /etc/msmtprc
+RUN echo "port 1025" >> /etc/msmtprc
+RUN echo "account maihog" >> /etc/msmtprc
+RUN echo "host mailhog" >> /etc/msmtprc
+RUN echo "from php@dockercontainer.com" >> /etc/msmtprc
+RUN echo "account default : mailhog" >> /etc/msmtprc
 
+# php configuration
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 COPY ./phpconf/memory_limit.ini $PHP_INI_DIR/conf.d/memory_limit.ini
 COPY ./phpconf/opcache.ini $PHP_INI_DIR/conf.d/opcache.ini
 COPY ./phpconf/xdebug.ini $PHP_INI_DIR/conf.d/xdebug.ini
+COPY ./phpconf/sendmail.ini $PHP_INI_DIR/conf.d/sendmail.ini
 COPY ./phpconf/www.conf /usr/local/etc/php-fpm.d/www.conf
 
 EXPOSE 9000
