@@ -1,11 +1,18 @@
 FROM php:7.4-fpm AS mhsendmail
 
+WORKDIR /build
+
 RUN apt-get update && apt-get install -y \
+    apt-utils \
     golang-go \
     git \
-    && go get github.com/mailhog/mhsendmail
+    && go get github.com/mailhog/mhsendmail \
+    && go build github.com/mailhog/mhsendmail
 
 FROM php:7.4-fpm
+
+# COPY mhsendmail from previous layer
+COPY --from=mhsendmail /build/mhsendmail /usr/bin/mhsendmail
 
 RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
@@ -28,8 +35,6 @@ RUN apt-get update && apt-get install -y \
     && ./configure --enable-memcached-igbinary --enable-memcached-msgpack \
     && make -j$(nproc) && make install && cd /tmp/ && docker-php-ext-enable memcached \
     && pecl install -a uploadprogress-1.1.3 && docker-php-ext-enable uploadprogress
-
-COPY --from=mhsendmail /usr/bin/mhsendmail /usr/bin/mhsendmail
 
 # php configuration
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
