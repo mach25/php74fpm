@@ -1,3 +1,4 @@
+FROM aheadworks/mhsendmail as mhsendmail
 FROM php:7.4-fpm
 
 RUN apt-get update && apt-get install -y \
@@ -11,8 +12,6 @@ RUN apt-get update && apt-get install -y \
     libgmp-dev \
     curl \
     wget \
-    msmtp \
-    mailutils \
     && docker-php-ext-install -j$(nproc) opcache gd mysqli pdo pdo_mysql xsl zip intl soap bcmath exif gmp iconv  \
     && pecl install -a xdebug-2.9.6 && docker-php-ext-enable xdebug \
     && pecl install -a igbinary-3.1.2 && docker-php-ext-enable igbinary \
@@ -23,13 +22,7 @@ RUN apt-get update && apt-get install -y \
     && make -j$(nproc) && make install && cd /tmp/ && docker-php-ext-enable memcached \
     && pecl install -a uploadprogress-1.1.3 && docker-php-ext-enable uploadprogress
 
-# setup msmtp to work with mailhog
-RUN echo "defaults" >> /etc/msmtprc
-RUN echo "port 1025" >> /etc/msmtprc
-RUN echo "account maihog" >> /etc/msmtprc
-RUN echo "host mailhog" >> /etc/msmtprc
-RUN echo "from php@dockercontainer.com" >> /etc/msmtprc
-RUN echo "account default : mailhog" >> /etc/msmtprc
+COPY --from=mhsendmail /usr/bin/mhsendmail /usr/bin/mhsendmail
 
 # php configuration
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
