@@ -1,4 +1,10 @@
-FROM aheadworks/mhsendmail as mhsendmail
+FROM php:7.4-fpm AS mhsendmail
+
+RUN apt-get update && apt-get install -y \
+    golang-go \
+    git \
+    && go get github.com/mailhog/mhsendmail
+
 FROM php:7.4-fpm
 
 RUN apt-get update && apt-get install -y \
@@ -12,6 +18,7 @@ RUN apt-get update && apt-get install -y \
     libgmp-dev \
     curl \
     wget \
+    less \
     && docker-php-ext-install -j$(nproc) opcache gd mysqli pdo pdo_mysql xsl zip intl soap bcmath exif gmp iconv  \
     && pecl install -a xdebug-2.9.6 && docker-php-ext-enable xdebug \
     && pecl install -a igbinary-3.1.2 && docker-php-ext-enable igbinary \
