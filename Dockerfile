@@ -42,6 +42,7 @@ COPY ./phpconf/memory_limit.ini $PHP_INI_DIR/conf.d/memory_limit.ini
 COPY ./phpconf/opcache.ini $PHP_INI_DIR/conf.d/opcache.ini
 COPY ./phpconf/xdebug.ini $PHP_INI_DIR/conf.d/xdebug.ini
 COPY ./phpconf/sendmail.ini $PHP_INI_DIR/conf.d/sendmail.ini
+COPY ./phpconf/max_execution_time.ini $PHP_INI_DIR/conf.d/max_execution_time.ini
 COPY ./phpconf/www.conf /usr/local/etc/php-fpm.d/www.conf
 
 EXPOSE 9000
