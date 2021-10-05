@@ -35,7 +35,7 @@ RUN apt-get update && apt-get install -y \
     && cd "$(pecl config-get temp_dir)/memcached" && phpize \
     && ./configure --enable-memcached-igbinary --enable-memcached-msgpack \
     && make -j$(nproc) && make install && cd /tmp/ && docker-php-ext-enable memcached \
-    && pecl install -a uploadprogress-1.1.3 && docker-php-ext-enable uploadprogress \
+    && pecl install -a uploadprogress-2.0.2 && docker-php-ext-enable uploadprogress \
     && pecl install -a apcu-5.1.20 && docker-php-ext-enable apcu
 
 # php configuration
