@@ -15,6 +15,9 @@ FROM php:7.4-fpm
 COPY --from=mhsendmail /build/mhsendmail /usr/bin/mhsendmail
 
 RUN apt-get update && apt-get install -y \
+    libssl-dev \
+    libsodium-dev \
+    libmagickwand-dev \
     libfreetype6-dev \
     libjpeg62-turbo-dev \
     libpng-dev \
@@ -26,25 +29,22 @@ RUN apt-get update && apt-get install -y \
     curl \
     wget \
     less \
-    && docker-php-ext-install -j$(nproc) opcache gd mysqli pdo pdo_mysql xsl zip intl soap bcmath exif gmp iconv  \
-    && pecl install -a imagick-3.5.1 && docker-php-ext-enable imagick \
-    && pecl install -a xdebug-3.1.0 && docker-php-ext-enable xdebug \
+    imagemagick \
+    && docker-php-ext-install -j$(nproc) opcache gd mysqli pdo pdo_mysql xsl zip intl soap bcmath exif gmp iconv phar sodium simplexml  \
+    && pecl install -a uploadprogress-2.0.2 && docker-php-ext-enable uploadprogress \
+    && pecl install -a apcu-5.1.21 && docker-php-ext-enable apcu \
+    && pecl install -a imagick-3.6.0 && docker-php-ext-enable imagick \
+    && pecl install -a xdebug-3.1.1 && docker-php-ext-enable xdebug \
     && pecl install -a igbinary-3.2.6 && docker-php-ext-enable igbinary \
     && pecl install -a msgpack-2.1.2 && docker-php-ext-enable msgpack \
     && pecl install --nobuild memcached-3.1.5 \
     && cd "$(pecl config-get temp_dir)/memcached" && phpize \
     && ./configure --enable-memcached-igbinary --enable-memcached-msgpack \
-    && make -j$(nproc) && make install && cd /tmp/ && docker-php-ext-enable memcached \
-    && pecl install -a uploadprogress-2.0.2 && docker-php-ext-enable uploadprogress \
-    && pecl install -a apcu-5.1.20 && docker-php-ext-enable apcu
+    && make -j$(nproc) && make install && cd /tmp/ && docker-php-ext-enable memcached
 
 # php configuration
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
-COPY ./phpconf/memory_limit.ini $PHP_INI_DIR/conf.d/memory_limit.ini
-COPY ./phpconf/opcache.ini $PHP_INI_DIR/conf.d/opcache.ini
-COPY ./phpconf/xdebug.ini $PHP_INI_DIR/conf.d/xdebug.ini
-COPY ./phpconf/sendmail.ini $PHP_INI_DIR/conf.d/sendmail.ini
-COPY ./phpconf/max_execution_time.ini $PHP_INI_DIR/conf.d/max_execution_time.ini
+COPY ./phpconf/extra.ini $PHP_INI_DIR/conf.d/extra.ini
 COPY ./phpconf/www.conf /usr/local/etc/php-fpm.d/www.conf
 
 EXPOSE 9000
